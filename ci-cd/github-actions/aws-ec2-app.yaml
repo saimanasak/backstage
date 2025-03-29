@@ -1,0 +1,75 @@
+name: EC2 Provision and Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      instance_type:
+        required: true
+      aws_region:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.aws_region }}
+
+      - name: Launch EC2
+        run: |
+          aws ec2 run-instances \
+            --image-id ami-071226ecf16aa7d96 \
+            --instance-type ${{ inputs.instance_type }} \
+            --region ${{ inputs.aws_region }} \
+            --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=${{ inputs.instance_name }}-webapp}]'
+      
+      - name: Deploy Web App
+        run: |
+          # Get the EC2 instance ID from AWS CLI
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --region ${{ inputs.aws_region }} \
+            --filters "Name=tag:Name,Values=${{ inputs.instance_name }}-webapp" \
+            --query "Reservations[0].Instances[0].InstanceId" \
+            --output text)
+
+          # Wait for instance to be running
+          aws ec2 wait instance-running \
+            --region ${{ inputs.aws_region }} \
+            --instance-ids $INSTANCE_ID
+
+          # Get public DNS (replace with your SSH method if using private networking)
+          PUBLIC_DNS=$(aws ec2 describe-instances \
+            --region ${{ inputs.aws_region }} \
+            --instance-ids $INSTANCE_ID \
+            --query "Reservations[0].Instances[0].PublicDnsName" \
+            --output text)
+
+          # Generate a temporary SSH key (or use your existing key)
+          mkdir -p ~/.ssh
+          ssh-keygen -t rsa -f ~/.ssh/github_action_key -N ""
+
+          # Send public key to EC2
+          aws ec2-instance-connect send-ssh-public-key \
+            --region ${{ inputs.aws_region }} \
+            --instance-id $INSTANCE_ID \
+            --availability-zone ${{ inputs.aws_region }}a \
+            --instance-os-user ubuntu \
+            --ssh-public-key file://~/.ssh/github_action_key.pub
+
+          # Deploy via SSH (example for Nginx)
+          ssh -i ~/.ssh/github_action_key \
+            -o StrictHostKeyChecking=no \
+            ubuntu@$PUBLIC_DNS << 'EOF'
+            sudo apt update -y
+            sudo apt install -y nginx
+            echo "<h1>Hello from Backstage!!!</h1>" | sudo tee /var/www/html/index.html
+            sudo systemctl restart nginx
+            EOF
+
+          echo "Web app deployed to: http://$PUBLIC_DNS"
