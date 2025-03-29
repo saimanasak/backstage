@@ -1,0 +1,88 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+
+kind: Template
+
+metadata:
+  name: aws-ec2-app
+  title: Deploy a Web App on AWS EC2
+  description: Launches an AWS EC2 instance and deploys a simple web app.
+  tags:
+    - aws
+    - ec2
+    - webapp
+
+spec:
+  owner: user:manasa
+  type: service
+
+  parameters:
+  - title: AWS Configuration
+    required:
+      - instance_type
+      - region
+      - name
+    properties:
+      name:
+        title: Name of the Instance
+        type: string
+        pattern: "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]+$"
+        description: "Can include letters, numbers, and special characters (@, $, !, %, *, ?, &)."
+        ui:options:
+          placeholder: "ec2-name"
+          autofocus: true
+
+      instance_type:
+        title: EC2 Instance Type
+        type: string
+        default: t2.micro
+        enum:
+          - t2.nano
+          - t2.micro
+          - t2.small
+        description: "Select an instance type from the list."
+
+      region:
+        title: AWS Region
+        type: string
+        default: us-east-1
+        description: "A region where the instance should be launched."
+        ui:options:
+          placeholder: "ec2-region"
+          autofocus: true
+
+      key_pair:
+        title: AWS Key Pair Name
+        type: string
+        description: "Ensure this key exists in your AWS account."
+        ui:options:
+          placeholder: "ec2-keypair"
+          autofocus: true
+
+  steps:
+    - id: launch-ec2
+      name: Launch EC2 Instance
+      action: aws:execute
+      input:
+        command: |
+          aws ec2 run-instances \
+            --image-id ami-071226ecf16aa7d96 \
+            --count 1 \
+            --instance-type ${{ parameters.instance_type }} \
+            --key-name ${{ parameters.key_pair }} \
+            --region ${{ parameters.region }} \
+            --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=WebApp}]'
+
+    - id: deploy-webapp
+      name: Deploy Web App
+      action: aws:ssh-execute
+      input:
+        instance_id: ${{ steps.launch-ec2.output.instance_id }}
+        command: |
+          sudo apt update
+          sudo apt install -y nginx
+          echo "<h1>Hello from Backstage</h1>" | sudo tee /var/www/html/index.html
+
+  output:
+    links:
+      - title: "EC2 Instance Dashboard"
+        url: "https://console.aws.amazon.com/ec2/v2/home"
