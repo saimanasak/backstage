@@ -71,7 +71,7 @@ spec:
       name: Trigger GitHub Actions
       action: github:actions:dispatch
       input:
-        repoUrl: ${{ parameters.gh_repo }}
+        repoUrl: "https://github.com/saimanasak/backstage"
         workflowId: "aws-ec2-app.yaml"
         branchOrTagName: "main"  
         inputs:
