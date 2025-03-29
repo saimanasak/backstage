@@ -14,6 +14,8 @@ metadata:
 spec:
   owner: user:manasa
   type: service
+  env:
+    NODE_OPTIONS: --no-node-snapshot
 
   parameters:
   - title: AWS Configuration
