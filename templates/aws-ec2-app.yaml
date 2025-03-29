@@ -71,9 +71,9 @@ spec:
       name: Trigger GitHub Actions
       action: github:actions:dispatch
       input:
-        repo: ${{ parameters.gh_repo }}
-        workflow_id: "aws-ec2-app.yaml"
-        ref: "main"  
+        repoUrl: ${{ parameters.gh_repo }}
+        workflowId: "aws-ec2-app.yaml"
+        branchOrTagName: "main"  
         inputs:
           instance_type: ${{ parameters.instance_type }}
           aws_region: ${{ parameters.region }}
