@@ -1,0 +1,31 @@
+apiVersion: backstage.io/v1alpha1
+
+kind: Group
+
+metadata:
+  name: Learning
+  description: Learning Group
+
+spec:
+  type: personal
+  profile:
+    displayName: Learning
+    picture: https://img.freepik.com/premium-vector/education-knowledge-books-learning-flat-style-cartoon-hand-drawn-illustration_2175-9997.jpg
+  children: []
+  
+---
+
+apiVersion: backstage.io/v1alpha1
+
+kind: User
+
+metadata:
+  name: Manasa
+  
+spec:
+  profile:
+    displayName: Manasa
+    email: manasa@gmail.com
+    picture: https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbfvQcCJGlOR7Ao5t47ONn_WBv5C3SHc8NNQ&s
+  memberOf:
+    - Learning
