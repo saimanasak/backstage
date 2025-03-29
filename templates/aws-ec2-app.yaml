@@ -22,7 +22,7 @@ spec:
     required:
       - instance_type
       - region
-      - name
+      - instance_name
     properties:
       gh_repo:
           title: GitHub Repository
