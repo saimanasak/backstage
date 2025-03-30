@@ -42,10 +42,14 @@ jobs:
             --query "Reservations[0].Instances[0].InstanceId" \
             --output text)
 
+          echo "Launched..."
+    
           # Wait for instance to be running
           aws ec2 wait instance-running \
             --region ${{ github.event.inputs.aws_region }} \
             --instance-ids $INSTANCE_ID
+            
+          echo "Wait completed"
 
           # Get public DNS (replace with your SSH method if using private networking)
           PUBLIC_DNS=$(aws ec2 describe-instances \
