@@ -45,9 +45,11 @@ jobs:
           echo "Launched..."
     
           # Wait for instance to be running
-          aws ec2 wait instance-running \
-            --region ${{ github.event.inputs.aws_region }} \
-            --instance-ids $INSTANCE_ID
+          # aws ec2 wait instance-running \
+            # --region ${{ github.event.inputs.aws_region }} \
+            # --instance-ids $INSTANCE_ID
+            
+          sleep 150
             
           echo "Wait completed"
 
