@@ -3,9 +3,13 @@ name: EC2 Provision and Deploy
 on:
   workflow_dispatch:
     inputs:
+      instance_name:
+        description: Name of the instance
       instance_type:
+        description: Type of the instance
         required: true
       aws_region:
+        description: Region where the instance gets deployed
         required: true
 
 jobs:
