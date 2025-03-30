@@ -78,7 +78,7 @@ spec:
       action: github:actions:dispatch
       input:
         repoUrl: "github.com?repo=backstage&owner=saimanasak"
-        workflowId: "./ci-cd/github-actions/aws-ec2-app.yaml"
+        workflowId: "aws-ec2-app.yaml"
         branchOrTagName: "main"  
         inputs:
           instance_type: ${{ parameters.instance_type }}
