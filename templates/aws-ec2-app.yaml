@@ -24,13 +24,6 @@ spec:
       - region
       - instance_name
     properties:
-      gh_repo:
-          title: GitHub Repository
-          type: string
-          description: "org/repo format (e.g., your-org/your-repo)"
-          ui:options:
-            placeholder: "myorg/myrepo"
-
       instance_name:
         title: Name of the Instance
         type: string
@@ -71,12 +64,12 @@ spec:
       - repoUrl
     properties:
       repoUrl:
-      title: Location of the repository
-      type: string
-      ui:field: RepoUrlPicker
-      ui:options:
-        allowedHosts:
-          - github.com
+        title: Location of the repository
+        type: string
+        ui:field: RepoUrlPicker
+        ui:options:
+          allowedHosts:
+            - github.com
 
 
   steps:
