@@ -65,13 +65,26 @@ spec:
         ui:options:
           placeholder: "ec2-keypair"
           autofocus: true
+    
+  - title: Choose a Repository Location
+    required:
+      - repoUrl
+    properties:
+      repoUrl:
+      title: Location of the repository
+      type: string
+      ui:field: RepoUrlPicker
+      ui:options:
+        allowedHosts:
+          - github.com
+
 
   steps:
     - id: trigger-gh-actions
       name: Trigger GitHub Actions
       action: github:actions:dispatch
       input:
-        repoUrl: "https://github.com/saimanasak/backstage"
+        repoUrl: "github.com?repo=backstage&owner=saimanasak"
         workflowId: "aws-ec2-app.yaml"
         branchOrTagName: "main"  
         inputs:
