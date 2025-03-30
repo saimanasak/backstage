@@ -80,9 +80,10 @@ spec:
         repoUrl: "github.com?repo=backstage&owner=saimanasak"
         workflowId: "aws-ec2-app.yaml"
         branchOrTagName: "main"  
-        inputs:
+        workflowInputs:
           instance_type: ${{ parameters.instance_type }}
           aws_region: ${{ parameters.region }}
+          instance_name: ${{ parameters.instance_name }}
 
   output:
     links:
